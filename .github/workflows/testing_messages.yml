@@ -25,7 +25,7 @@ jobs:
       - name: alert if there's a skip
         run: |
           if echo "${{ contains(github.event.commits.*.message, '#skip') }}"; then
-            echo 'skip this one'
-          else
             echo 'run this one'
+          else
+            echo 'skip this one'
           fi

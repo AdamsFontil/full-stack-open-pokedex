@@ -1,56 +1,59 @@
-# name: Deployment pipeline
+name: Deployment pipeline
 
-# on:
-#   push:
-#     branches:
-#       - master
-#   pull_request:
-#     branches: [master]
-#     types: [opened, synchronize]
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches: [master]
+    types: [opened, synchronize]
 
-# jobs:
-#   simple_deployment_pipeline:
-#     runs-on: ubuntu-20.04
-#     steps:
-#       - uses: actions/checkout@v3
-#       - uses: actions/setup-node@v3
-#         with:
-#           node-version: '16'
-#       - name: Install dependencies
-#         run: npm install
-#       - name: Check style
-#         run: npm run eslint
-#       - name: build
-#         run: npm run build
-#       - name: test
-#         run: npm run test
-#       - name: e2e tests
-#         uses: cypress-io/github-action@v5
-#         with:
-#           command: npm run test:e2e
-#           start: npm run start-prod
-#           wait-on: http://localhost:5000
+jobs:
+  simple_deployment_pipeline:
+    runs-on: ubuntu-20.04
+    if: |
+      github.event_name == 'push' ||
+      (github.event_name == 'pull_request' && !contains(github.event.commits.*.message, '#skip'))
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+      - name: Install dependencies
+        run: npm install
+      - name: Check style
+        run: npm run eslint
+      - name: build
+        run: npm run build
+      - name: test
+        run: npm run test
+      - name: e2e tests
+        uses: cypress-io/github-action@v5
+        with:
+          command: npm run test:e2e
+          start: npm run start-prod
+          wait-on: http://localhost:5000
 
-#       - name: Setup flyctl
-#         if: ${{ github.event_name == 'push' }}
-#         uses: superfly/flyctl-actions/setup-flyctl@master
-#         env:
-#           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+      - name: Setup flyctl
+        if: github.event_name == 'push'
+        uses: superfly/flyctl-actions/setup-flyctl@master
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
-#       - name: Deploy app
-#         if: ${{ github.event_name == 'push' }}
-#         run: flyctl deploy --remote-only
-#         env:
-#           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+      - name: Deploy app
+        if: github.event_name == 'push'
+        run: flyctl deploy --remote-only
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
-#   tag_release:
-#     name: Bump version and push tag
-#     needs: [simple_deployment_pipeline]
-#     runs-on: ubuntu-20.04
-#     if: ${{ github.event_name == 'push' }}
-#     steps:
-#       - uses: actions/checkout@v3
-#       - uses: anothrNick/github-tag-action@1.55.0
-#         env:
-#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#           DEFAULT_BUMP: patch
+  tag_release:
+    name: Bump version and push tag
+    needs: [simple_deployment_pipeline]
+    runs-on: ubuntu-20.04
+    if: github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v3
+      - uses: anothrNick/github-tag-action@1.55.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEFAULT_BUMP: patch

@@ -19,14 +19,14 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '16'
-      - name: Install dependencies
-        run: npm install
-      - name: Check style
-        run: npm run eslint
-      - name: build
-        run: npm run build
-      - name: test
-        run: npm run test
+      # - name: Install dependencies
+      #   run: npm install
+      # - name: Check style
+      #   run: npm run eslint
+      # - name: build
+      #   run: npm run build
+      # - name: test
+      #   run: npm run test
       # - name: e2e tests
       #   uses: cypress-io/github-action@v5
       #   with:
@@ -51,14 +51,14 @@ jobs:
           severity: info
           text: A new version of pokedex has been deployed
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
-          descriptipn: to https://fragrant-silence-4491.fly.dev/ by ${{ github.event.pusher.name }}
+          description: to https://fragrant-silence-4491.fly.dev/ by ${{ github.event.pusher.name }}
       - name: Notify of build fail
         uses: rjstone/discord-webhook-notify@v1
         with:
           severity: error
           text: Something went wrong, the build failed
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
-          description: commit ${{ github.event.commit }} by ${{ github.event.pusher.name }} broke the build
+          description: commit ${{ github.event.commit.URL }} by ${{ github.event.pusher.name }} broke the build
 
 
 

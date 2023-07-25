@@ -51,17 +51,15 @@ jobs:
           severity: info
           text: A new version of pokedex has been deployed
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+          descriptipn: to https://fragrant-silence-4491.fly.dev/ by ${{ github.event.pusher.name }}
       - name: Notify of build fail
         uses: rjstone/discord-webhook-notify@v1
         with:
           severity: error
           text: Something went wrong, the build failed
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
-          username: CustomUsername
-          avatarUrl:
-          description:
-          details:
-          footer:
+          description: commit ${{ github.event.commit }} by ${{ github.event.pusher.name }} broke the build
+
 
 
 

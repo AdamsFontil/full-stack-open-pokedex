@@ -45,11 +45,24 @@ jobs:
       #   run: flyctl deploy --remote-only
       #   env:
       #     FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
-      - name: Notify discord
+      - name: Notify of successful deployment
         uses: rjstone/discord-webhook-notify@v1
         with:
           severity: info
+          text: A new version of pokedex has been deployed
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+      - name: Notify of build fail
+        uses: rjstone/discord-webhook-notify@v1
+        with:
+          severity: error
+          text: Something went wrong, the build failed
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+          username: CustomUsername
+          avatarUrl:
+          description:
+          details:
+          footer:
+
 
 
   # tag_release:

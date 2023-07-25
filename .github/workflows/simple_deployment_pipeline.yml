@@ -46,10 +46,10 @@ jobs:
       #   env:
       #     FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
       - name: Notify discord
-    uses: rjstone/discord-webhook-notify@v1
-    with:
-        severity: info
-        webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+        uses: rjstone/discord-webhook-notify@v1
+        with:
+          severity: info
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
 
 
   # tag_release:

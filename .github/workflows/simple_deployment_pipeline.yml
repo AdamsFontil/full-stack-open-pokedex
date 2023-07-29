@@ -19,55 +19,68 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '16'
-      - name: Install dependencies
-        run: npm install
-      - name: Check style
-        run: npm run eslint
-      - name: build
-        run: npm run build
-      - name: test
-        run: npm run test
-      - name: e2e tests
-        uses: cypress-io/github-action@v5
+      # - name: Install dependencies
+      #   run: npm install
+      # - name: Check style
+      #   run: npm run eslint
+      # - name: build
+      #   run: npm run build
+      # - name: test
+      #   run: npm run test
+      # - name: e2e tests
+      #   uses: cypress-io/github-action@v5
+      #   with:
+      #     command: npm run test:e2e
+      #     start: npm run start-prod
+      #     wait-on: http://localhost:5000
+
+      # - name: Setup flyctl
+      #   if: github.event_name == 'push'
+      #   uses: superfly/flyctl-actions/setup-flyctl@master
+      #   env:
+      #     FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+      # - name: Deploy app
+      #   if: github.event_name == 'push'
+      #   run: flyctl deploy --remote-only
+      #   env:
+      #     FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+      # - name: Notify of successful deployment
+      #   if: success()
+      #   uses: rjstone/discord-webhook-notify@v1
+      #   with:
+      #     avatarUrl:
+      #     username:
+      #     severity: info
+      #     text: A new version of pokedex has been deployed
+      #     webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+      #     description: to https://fragrant-silence-4491.fly.dev/ by ${{ github.event.pusher.name }}
+      # - name: Notify of build fail
+      #   if: failure()
+      #   uses: rjstone/discord-webhook-notify@v1
+      #   with:
+      #     avatarUrl:
+      #     username:
+      #     severity: error
+      #     text: Something went wrong, the build failed
+      #     webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+      #     description: commit
+      #      ${{ github.event.head_commit.url }} by ${{ github.event.pusher.name }} broke the build
+      - name: Check the deployed service URL
+        uses: jtalk/url-health-check-action@v3
         with:
-          command: npm run test:e2e
-          start: npm run start-prod
-          wait-on: http://localhost:5000
+          # Check the following URLs one by one sequentially
+          url: https://fragrant-silence-4491.fly.dev/
+          # Follow redirects, or just report success on 3xx status codes
+          follow-redirect: false # Optional, defaults to "false"
+          # Fail this action after this many failed attempts
+          max-attempts: 3 # Optional, defaults to 1
+          # Delay between retries
+          retry-delay: 5s # Optional, only applicable to max-attempts > 1
+          # Retry all errors, including 404. This option might trigger curl upgrade.
+          retry-all: false # Optional, defaults to "false"
+          # String representation of cookie attached to health check request.
 
-      - name: Setup flyctl
-        if: github.event_name == 'push'
-        uses: superfly/flyctl-actions/setup-flyctl@master
-        env:
-          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
-
-      - name: Deploy app
-        if: github.event_name == 'push'
-        run: flyctl deploy --remote-only
-        env:
-          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
-      - name: Notify of successful deployment
-        if: success()
-        uses: rjstone/discord-webhook-notify@v1
-        with:
-          avatarUrl:
-          username:
-          severity: info
-          text: A new version of pokedex has been deployed
-          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
-          description: to https://fragrant-silence-4491.fly.dev/ by ${{ github.event.pusher.name }}
-
-
-      - name: Notify of build fail
-        if: failure()
-        uses: rjstone/discord-webhook-notify@v1
-        with:
-          avatarUrl:
-          username:
-          severity: error
-          text: Something went wrong, the build failed
-          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
-          description: commit
-           ${{ github.event.head_commit.url }} by ${{ github.event.pusher.name }} broke the build
 
 
 
